@@ -14,8 +14,8 @@ type SalesOrder struct {
 	VatID         uint       `json:"vat_id"`
 	Pph23ID       uint       `json:"pph23_id"`
 	RevNo         string     `json:"rev_no"`
-	NoBuyerNo     string     `json:"no_buyer_no"`
-	NoBuyerNoOri  string     `json:"no_buyer_no_ori"`
+	PoBuyerNo     string     `json:"po_buyer_no"`
+	PoBuyerNoOri  string     `json:"po_buyer_no_ori"`
 	SalesOrderNo  string     `json:"sales_order_no"`
 	Remark        string     `json:"remark"`
 	ShipDest      string     `json:"ship_dest"`

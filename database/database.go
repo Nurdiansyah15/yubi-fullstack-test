@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"os"
+	"yubi-fullstack-test/models"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -27,8 +28,8 @@ func ConnectDatabase() error {
 
 	fmt.Println("Connected to database successfully")
 
-	// TODO: tambahkan auto migration jika diperlukan
-	// db.AutoMigrate(&models.SalesOrder{}, &models.SoDt{})
+	// migrasi database
+	db.AutoMigrate(&models.SalesOrder{}, &models.SoDt{})
 
 	return nil
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"yubi-fullstack-test/database"
+	"yubi-fullstack-test/routes"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -20,6 +21,10 @@ func main() {
 		panic("Failed to connect to database: " + err.Error())
 	}
 
+	// seeder
+	// seeders.SeedSalesOrders()
+	// seeders.SeedSoDts()
+
 	// start gin
 	r := gin.Default()
 
@@ -33,6 +38,7 @@ func main() {
 	r.Use(cors.New(config))
 
 	// routes
+	routes.InitRoutes(database.DB, r)
 
 	// start server
 	r.Run(":8080")
