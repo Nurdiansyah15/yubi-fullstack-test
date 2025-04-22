@@ -149,7 +149,6 @@ func (handler *soDtHandler) CreateSoDt(c *gin.Context) {
 		Qty:          *soDtCreateRequest.Qty,
 		DiscPerc:     *soDtCreateRequest.DiscPerc,
 		DiscAm:       *soDtCreateRequest.DiscAm,
-		Total:        *soDtCreateRequest.TotalAm,
 		Remark:       *soDtCreateRequest.Remark,
 	}
 
@@ -230,7 +229,6 @@ func (handler *soDtHandler) UpdateSoDt(c *gin.Context) {
 		Qty:          *soDtUpdateRequest.Qty,
 		DiscPerc:     *soDtUpdateRequest.DiscPerc,
 		DiscAm:       *soDtUpdateRequest.DiscAm,
-		Total:        *soDtUpdateRequest.TotalAm,
 		Remark:       *soDtUpdateRequest.Remark,
 	}
 
@@ -267,7 +265,13 @@ func (handler *soDtHandler) DeleteSoDt(c *gin.Context) {
 		return
 	}
 
-	soDtDeleted, errCode := handler.soDtService.Delete(uint(soDtIdUint))
+	salesOrderIdUint, err := strconv.ParseUint(soDtId, 10, 32)
+	if err != nil {
+		utils.ApiErrorResponse(c, 400, "BAD_REQUEST", "salesOrderId must be a number")
+		return
+	}
+
+	soDtDeleted, errCode := handler.soDtService.Delete(uint(salesOrderIdUint), uint(soDtIdUint))
 	if errCode != "" {
 		switch errCode {
 		case "SALES_ORDER_NOT_FOUND_404":

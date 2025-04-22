@@ -9,7 +9,6 @@ type SalesOrderDetailCreateRequest struct {
 	Qty         *float64 `json:"qty" binding:"required"`
 	DiscPerc    *float64 `json:"disc_perc" binding:"required"`
 	DiscAm      *float64 `json:"disc_am" binding:"required"`
-	TotalAm     *float64 `json:"total_am" binding:"required"`
 	Remark      *string  `json:"remark"`
 }
 
@@ -22,6 +21,5 @@ type SalesOrderDetailUpdateRequest struct {
 	Qty         *float64 `json:"qty"`
 	DiscPerc    *float64 `json:"disc_perc"`
 	DiscAm      *float64 `json:"disc_am"`
-	TotalAm     *float64 `json:"total_am"`
 	Remark      *string  `json:"remark"`
 }

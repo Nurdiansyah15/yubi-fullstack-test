@@ -10,17 +10,24 @@ import (
 type SalesOrderService interface {
 	FindAll() ([]*dto.SalesOrderResponse, string)
 	FindById(id uint) (*dto.SalesOrderResponse, string)
-	Store(salesOrder models.SalesOrder) (*models.SalesOrder, string)
-	Update(salesOrder models.SalesOrder) (*models.SalesOrder, string)
+	Store(salesOrder models.SalesOrder) (*dto.SalesOrderResponse, string)
+	Update(salesOrder models.SalesOrder) (*dto.SalesOrderResponse, string)
 	Delete(id uint) (string, string)
+	SetSoDtService(soDtService SoDtService)
 }
 
 type salesOrderService struct {
 	salesOrderRepository repositories.SalesOrderRepository
+	soDtsRepository      repositories.SoDtRepository
+	soDtService          SoDtService
 }
 
-func NewSalesOrderService(salesOrderRepository repositories.SalesOrderRepository) SalesOrderService {
-	return &salesOrderService{salesOrderRepository: salesOrderRepository}
+func NewSalesOrderService(salesOrderRepository repositories.SalesOrderRepository, soDtsRepository repositories.SoDtRepository) SalesOrderService {
+	return &salesOrderService{salesOrderRepository: salesOrderRepository, soDtsRepository: soDtsRepository}
+}
+
+func (salesOrderService *salesOrderService) SetSoDtService(soDtService SoDtService) {
+	salesOrderService.soDtService = soDtService
 }
 
 func (s *salesOrderService) FindAll() ([]*dto.SalesOrderResponse, string) {
@@ -45,25 +52,40 @@ func (s *salesOrderService) FindById(id uint) (*dto.SalesOrderResponse, string) 
 	return salesOrderResponse, ""
 }
 
-func (s *salesOrderService) Store(salesOrder models.SalesOrder) (*models.SalesOrder, string) {
+func (s *salesOrderService) Store(salesOrder models.SalesOrder) (*dto.SalesOrderResponse, string) {
 	salesOrderStored, err := s.salesOrderRepository.Store(salesOrder)
 	if err != "" {
 		return nil, err
 	}
 
-	return salesOrderStored, ""
+	salesOrderResponse := formatterUtils.FormatSalesOrder(salesOrderStored)
+
+	return salesOrderResponse, ""
 }
 
-func (s *salesOrderService) Update(salesOrder models.SalesOrder) (*models.SalesOrder, string) {
+func (s *salesOrderService) Update(salesOrder models.SalesOrder) (*dto.SalesOrderResponse, string) {
 	salesOrderUpdated, err := s.salesOrderRepository.Update(salesOrder)
 	if err != "" {
 		return nil, err
 	}
+	salesOrderResponse := formatterUtils.FormatSalesOrder(salesOrderUpdated)
 
-	return salesOrderUpdated, ""
+	return salesOrderResponse, ""
 }
 
 func (s *salesOrderService) Delete(id uint) (string, string) {
+	soDts, err := s.soDtsRepository.FindAllBySalesOrderId(id)
+	if err != "" {
+		return "", err
+	}
+
+	for _, soDt := range soDts {
+		_, err := s.soDtService.Delete(soDt.SalesOrderID, soDt.ID)
+		if err != "" {
+			return "", err
+		}
+	}
+
 	result, err := s.salesOrderRepository.Delete(id)
 	if err != "" {
 		return "", err

@@ -11,11 +11,11 @@ import (
 
 func InitRoutes(db *gorm.DB, r *gin.Engine) {
 	salesOrderRepository := repositories.NewSalesOrderRepository(db)
-	salesOrderService := services.NewSalesOrderService(salesOrderRepository)
-	salesOrderhandler := handlers.NewSalesOrderHandler(salesOrderService)
-
 	salesOrderDetailRepository := repositories.NewSoDtRepository(db)
-	salesOrderDetailService := services.NewSoDtService(salesOrderDetailRepository, salesOrderService)
+	salesOrderService := services.NewSalesOrderService(salesOrderRepository, salesOrderDetailRepository)
+	salesOrderDetailService := services.NewSoDtService(salesOrderDetailRepository, salesOrderService, salesOrderRepository)
+	salesOrderService.SetSoDtService(salesOrderDetailService)
+	salesOrderhandler := handlers.NewSalesOrderHandler(salesOrderService)
 	salesOrderDetailhandler := handlers.NewSoDtHandler(salesOrderDetailService)
 
 	// API group for versioning (v1)
