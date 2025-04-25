@@ -259,13 +259,13 @@ func (handler *soDtHandler) DeleteSoDt(c *gin.Context) {
 		return
 	}
 
-	soDtIdUint, err := strconv.ParseUint(salesOrderId, 10, 32)
+	soDtIdUint, err := strconv.ParseUint(soDtId, 10, 32)
 	if err != nil {
 		utils.ApiErrorResponse(c, 400, "BAD_REQUEST", "Invalid sales order detail ID")
 		return
 	}
 
-	salesOrderIdUint, err := strconv.ParseUint(soDtId, 10, 32)
+	salesOrderIdUint, err := strconv.ParseUint(salesOrderId, 10, 32)
 	if err != nil {
 		utils.ApiErrorResponse(c, 400, "BAD_REQUEST", "salesOrderId must be a number")
 		return

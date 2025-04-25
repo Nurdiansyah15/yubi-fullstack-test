@@ -151,9 +151,9 @@ func (s *soDtService) recalculateSalesOrderTotals(salesOrderID uint) string {
 		itemTotal := detail.PriceSell * detail.Qty
 
 		var disc float64
-		if detail.DiscAm != 0 {
+		if detail.DiscAm > 0 {
 			disc = detail.DiscAm
-		} else if detail.DiscPerc != 0 {
+		} else if detail.DiscPerc > 0 {
 			disc = itemTotal * (detail.DiscPerc / 100)
 		}
 

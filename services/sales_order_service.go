@@ -1,6 +1,7 @@
 package services
 
 import (
+	"sync"
 	"yubi-fullstack-test/dto"
 	"yubi-fullstack-test/models"
 	"yubi-fullstack-test/repositories"
@@ -79,17 +80,33 @@ func (s *salesOrderService) Delete(id uint) (string, string) {
 		return "", err
 	}
 
+	var wg sync.WaitGroup
+
+	errChan := make(chan string, len(soDts))
+
 	for _, soDt := range soDts {
-		_, err := s.soDtService.Delete(soDt.SalesOrderID, soDt.ID)
+		wg.Add(1)
+
+		go func(soDt *models.SoDt) {
+			defer wg.Done()
+
+			_, err := s.soDtService.Delete(soDt.SalesOrderID, soDt.ID)
+			if err != "" {
+				errChan <- err
+			}
+		}(soDt)
+	}
+
+	wg.Wait()
+
+	select {
+	case err := <-errChan:
+		return "", err
+	default:
+		result, err := s.salesOrderRepository.Delete(id)
 		if err != "" {
 			return "", err
 		}
+		return result, ""
 	}
-
-	result, err := s.salesOrderRepository.Delete(id)
-	if err != "" {
-		return "", err
-	}
-
-	return result, ""
 }
